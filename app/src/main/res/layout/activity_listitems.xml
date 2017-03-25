@@ -7,11 +7,14 @@
     android:gravity="center_vertical|left"
     android:orientation="horizontal"
     android:paddingLeft="16dp"
-    android:id="@+id/cont_item_root" android:background="#dddddd">
+    android:id="@+id/cont_item_root" android:background="#ffffff">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="#ffffff">
 
         <ImageView
             android:id="@+id/ivContactImage"

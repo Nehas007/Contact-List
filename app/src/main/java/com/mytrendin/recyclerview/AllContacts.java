@@ -42,10 +42,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                     getLoaderManager().initLoader(1, null, this);
                     displayAllContacts();
                 }
-
             }
-
-
         }
         else {
             if(exist == 0) {
@@ -93,7 +90,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         if(i==1) {
-            return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null,mOrderBy);
+            return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null,"upper("+ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + ") ASC");
         }
         return null;
     }
@@ -116,12 +113,9 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                             null);
                     if (phoneCursor.moveToNext()) {
                         String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
+                        phoneCursor.close();
                         myDB.addContact(name,phoneNumber);
                     }
-
-                    phoneCursor.close();
-
                 }
             }
             displayAllContacts();
@@ -130,7 +124,6 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
     public boolean checkContactsPermission() {
 
@@ -163,11 +156,11 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                     if (ContextCompat.checkSelfPermission(this,
                             android.Manifest.permission.READ_CONTACTS)
                             == PackageManager.PERMISSION_GRANTED) {
+
                         exist = myDB.tableExists();
                         if(exist==0)
                         {
                             getLoaderManager().initLoader(1, null, this);
-
                         }
                       return;
                     }

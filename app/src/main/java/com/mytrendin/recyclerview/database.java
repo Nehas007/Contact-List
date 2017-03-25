@@ -52,7 +52,7 @@ public class database extends SQLiteOpenHelper {
 
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase(); //create/open db for reading/writing
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);  //runs SQL query and returns cursor over result
+        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_NAME , null);  //runs SQL query and returns cursor over result
         /*the second paramenter to rawQuery is cancellableSignal which signifies that what
         needs to be done when the operation is cancelled...
         in this case null signifies nothing...*/
@@ -64,9 +64,7 @@ public class database extends SQLiteOpenHelper {
     public int tableExists(){
       //  boolean isTableExists(SQLiteDatabase db, String tableName)
        SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = db.rawQuery("SELECT  * FROM " + TABLE_NAME,null);
-
             int count = cursor.getCount();
             cursor.close();
             return count;
