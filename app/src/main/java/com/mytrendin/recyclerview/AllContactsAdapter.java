@@ -1,6 +1,5 @@
 package com.mytrendin.recyclerview;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,10 +16,10 @@ import java.util.List;
 
 public class AllContactsAdapter extends RecyclerView.Adapter<AllContactsAdapter.ContactViewHolder>{
 
-    private List<ContactVO> contactVOList;
+    private List<ContactListItem> contactList;
     private Context mContext;
-    public AllContactsAdapter(List<ContactVO> contactVOList, Context mContext){
-        this.contactVOList = contactVOList;
+    public AllContactsAdapter(List<ContactListItem> contactList, Context mContext){
+        this.contactList = contactList;
         this.mContext = mContext;
     }
 
@@ -33,14 +32,14 @@ public class AllContactsAdapter extends RecyclerView.Adapter<AllContactsAdapter.
 
     @Override
     public void onBindViewHolder(ContactViewHolder holder, int position) {
-        ContactVO contactVO = contactVOList.get(position);
-        holder.tvContactName.setText(contactVO.getContactName());
-        holder.tvPhoneNumber.setText(contactVO.getContactNumber());
+        ContactListItem contactListItem = contactList.get(position);
+        holder.tvContactName.setText(contactListItem.getContactName());
+        holder.tvPhoneNumber.setText(contactListItem.getContactNumber());
     }
 
     @Override
     public int getItemCount() {
-        return contactVOList.size();
+        return contactList.size();
     }
 
     public static class ContactViewHolder extends RecyclerView.ViewHolder{
