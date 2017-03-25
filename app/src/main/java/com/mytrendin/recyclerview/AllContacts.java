@@ -24,30 +24,37 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
     RecyclerView rvContacts;
     database myDB;
     Boolean permission=false;
-
+    int exist;
+    private String mOrderBy = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY;
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 99;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         myDB = new database(this);
+        exist = myDB.tableExists();
         rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            permission = checkStoragePermission();
+            permission = checkContactsPermission();
+            if(permission){
+               if(exist==0)
+                {
+                    getLoaderManager().initLoader(1, null, this);
+                    displayAllContacts();
+                }
+
+            }
+
+
         }
         else {
-            if(!myDB.tableExists())
+            if(exist == 0) {
                 getLoaderManager().initLoader(1, null, this);
-            else
                 displayAllContacts();
-
-        }if(permission){
-            if(!myDB.tableExists())
-                getLoaderManager().initLoader(1, null, this);
-            else
-                displayAllContacts();
+            }
         }
 
+        displayAllContacts();
 
     }
 
@@ -73,7 +80,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                 }
 
             }
-            c.close();
+
             AllContactsAdapter contactAdapter = new AllContactsAdapter(contactList, getApplicationContext());
         rvContacts.setLayoutManager(new LinearLayoutManager(this));
         rvContacts.setAdapter(contactAdapter);
@@ -86,7 +93,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         if(i==1) {
-            return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null,mOrderBy);
         }
         return null;
     }
@@ -99,7 +106,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
                 if (hasPhoneNumber > 0) {
                     String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
                     ContentResolver contentResolver = getContentResolver();
                     Cursor phoneCursor = contentResolver.query(
                             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -125,7 +132,7 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-    public boolean checkStoragePermission() {
+    public boolean checkContactsPermission() {
 
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_CONTACTS)
@@ -154,9 +161,15 @@ public class AllContacts extends AppCompatActivity implements LoaderManager.Load
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(this,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                            android.Manifest.permission.READ_CONTACTS)
                             == PackageManager.PERMISSION_GRANTED) {
-                        getLoaderManager().initLoader(1,null,this);
+                        exist = myDB.tableExists();
+                        if(exist==0)
+                        {
+                            getLoaderManager().initLoader(1, null, this);
+
+                        }
+                      return;
                     }
                 } else {
                     Toast.makeText(this, "permission denied",

@@ -24,7 +24,7 @@ public class database extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         //execute the create table query
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + "(" +
                 COLUMN_NAME + " TEXT, " +
@@ -35,7 +35,7 @@ public class database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+
         onCreate(sqLiteDatabase);
     }
 
@@ -61,19 +61,15 @@ public class database extends SQLiteOpenHelper {
         return res;
     }
 
-    public Boolean tableExists(){
+    public int tableExists(){
       //  boolean isTableExists(SQLiteDatabase db, String tableName)
        SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", TABLE_NAME});
-            if (!cursor.moveToFirst())
-            {
-                cursor.close();
-                return false;
-            }
-            int count = cursor.getInt(0);
+        Cursor cursor = db.rawQuery("SELECT  * FROM " + TABLE_NAME,null);
+
+            int count = cursor.getCount();
             cursor.close();
-            return count > 0;
+            return count;
 
     }
 }
